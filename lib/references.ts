@@ -6,7 +6,7 @@
 declare function require(name: string): any;
 
 /// <reference path="../defs/metahub.d.ts"/>
+/// <reference path="../defs/ground.d.ts"/>
 
-/// <reference path="Framework.ts"/>
-/// <reference path="Module.ts"/>
-
+/// <reference path="Soil.ts"/>
+/// <reference path="Bulb.ts"/>

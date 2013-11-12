@@ -3,6 +3,6 @@
  * Date: 9/19/13
  */
 /// <reference path="references.ts"/>
-/// <reference path="Framework.ts"/>
-/// <reference path="Module.ts"/>
+/// <reference path="Soil.ts"/>
+/// <reference path="Bulb.ts"/>
 require('source-map-support').install();
