@@ -5,16 +5,26 @@
 
 module Vineyard {
   export class Bulb extends MetaHub.Meta_Object {
-    soil: Soil
+    vineyard: Vineyard
     config
+    ground:Ground.Core
 
-    constructor(soil: Soil, config) {
+    constructor(vineyard: Vineyard, config) {
       super()
-      this.soil = soil
+      this.vineyard = vineyard
+      this.ground = vineyard.ground
       this.config = config
     }
 
     grow() {
+
+    }
+
+    start() {
+
+    }
+
+    stop() {
 
     }
   }
