@@ -2,8 +2,7 @@
 /// <reference path="../defs/ground.d.ts"/>
 
 class Vineyard {
-  bulbs:{ [name: string]: Vineyard.Bulb
-  } = {}
+  bulbs:any
   config
   config_folder
   ground:Ground.Core

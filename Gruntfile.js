@@ -54,9 +54,10 @@ module.exports = function (grunt) {
     copy: {
       "vineyard-def": {
         files: [
-          { src: 'vineyard.d.ts', dest: '../../defs/vineyard.d.ts'},
-          { src: 'vineyard.d.ts', dest: '../lawn/defs/vineyard.d.ts'},
-          { src: 'vineyard.d.ts', dest: '../fortress/defs/vineyard.d.ts'}
+          { src: 'vineyard.d.ts', dest: '../../defs/'},
+          { src: 'vineyard.d.ts', dest: '../lawn/defs/'},
+          { src: 'vineyard.d.ts', dest: '../fortress/defs/'},
+          { src: 'vineyard.d.ts', dest: '../plantlab/defs/'}
         ]
       }
     },

@@ -1,5 +1,4 @@
 
-//var MetaHub = require('metahub')
 /// <reference path="../defs/metahub.d.ts"/>
 /// <reference path="references.ts"/>
 

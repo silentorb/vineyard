@@ -1,7 +1,6 @@
 var MetaHub = require('metahub');var Ground = require('ground');var Vineyard = (function () {
     function Vineyard(config_file) {
         if (typeof config_file === "undefined") { config_file = undefined; }
-        this.bulbs = {};
         if (config_file)
             this.load(config_file);
     }
