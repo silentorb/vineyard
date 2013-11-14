@@ -1,6 +1,7 @@
 var MetaHub = require('metahub');var Ground = require('ground');var Vineyard = (function () {
     function Vineyard(config_file) {
         if (typeof config_file === "undefined") { config_file = undefined; }
+        this.bulbs = {};
         if (config_file)
             this.load(config_file);
     }
@@ -29,6 +30,9 @@ var MetaHub = require('metahub');var Ground = require('ground');var Vineyard = (
                 file = name;
 
             var bulb_class = require(file);
+            if (!bulb_class)
+                throw new Error('Could not load bulb module: "' + name + '" (path=' + file + ').');
+
             var bulb = new bulb_class(this, info);
             this.bulbs[name] = bulb;
             bulb.grow();

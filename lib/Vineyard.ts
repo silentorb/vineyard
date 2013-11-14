@@ -2,7 +2,7 @@
 /// <reference path="../defs/ground.d.ts"/>
 
 class Vineyard {
-  bulbs:any
+  bulbs:any = {}
   config
   config_folder
   ground:Ground.Core
@@ -44,6 +44,9 @@ class Vineyard {
         file = name
 
       var bulb_class = require(file)
+      if (!bulb_class)
+        throw new Error('Could not load bulb module: "' + name + '" (path=' + file + ').')
+
       var bulb = new bulb_class(this, info)
       this.bulbs[name] = bulb
       bulb.grow()
