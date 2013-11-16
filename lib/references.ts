@@ -5,3 +5,4 @@ declare function require(name: string): any;
 
 /// <reference path="Vineyard.ts"/>
 /// <reference path="Bulb.ts"/>
+/// <reference path="User.ts"/>
