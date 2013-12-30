@@ -4,6 +4,9 @@ var MetaHub = require('metahub');var Ground = require('ground');var Vineyard = (
         this.bulbs = {};
         if (config_file)
             this.load(config_file);
+
+        var path = require('path');
+        this.root_path = path.dirname(require['main'].filename);
     }
     Vineyard.create_ground = function (db_name, databases, trellis_files) {
         var path = require('path');
@@ -87,23 +90,4 @@ var Vineyard;
     })(MetaHub.Meta_Object);
     Vineyard.Bulb = Bulb;
 })(Vineyard || (Vineyard = {}));
-var Vineyard;
-(function (Vineyard) {
-    var User = (function () {
-        function User(source) {
-            this.id = source.id || 0;
-            this.name = source.name || '';
-        }
-        User.prototype.simple = function () {
-            return {
-                uid: this.id,
-                name: this.name
-            };
-        };
-        return User;
-    })();
-    Vineyard.User = User;
-})(Vineyard || (Vineyard = {}));
-require('source-map-support').install();
-//# sourceMappingURL=vineyard.js.map
 module.exports = Vineyard

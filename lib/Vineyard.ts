@@ -6,10 +6,14 @@ class Vineyard {
   config
   config_folder
   ground:Ground.Core
+  root_path:string
 
   constructor(config_file:string = undefined) {
     if (config_file)
       this.load(config_file)
+
+    var path = require('path')
+    this.root_path = path.dirname(require['main'].filename)
   }
 
   static create_ground(db_name:string, databases, trellis_files):Ground.Core {
@@ -18,8 +22,7 @@ class Vineyard {
     for (var i in trellis_files) {
       ground.load_schema_from_file(trellis_files[i])
     }
-//      ground.load_schema_from_file(path.join(__dirname, '../config/schema/standard.json'))
-//      ground.load_schema_from_file(path.join(__dirname, '../config/schema/site.json'))
+
     return ground;
   }
 
@@ -27,9 +30,6 @@ class Vineyard {
   // other is still get loaded.
   get_bulb(name:string):Promise {
     return when.resolve(this.bulbs[name])
-//      var def = when.defer()
-//
-//      return def.promise
   }
 
   load_bulbs(bulbs) {

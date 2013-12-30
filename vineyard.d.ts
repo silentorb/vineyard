@@ -5,6 +5,7 @@ declare class Vineyard {
     public config;
     public config_folder;
     public ground: Ground.Core;
+    public root_path: string;
     constructor(config_file?: string);
     static create_ground(db_name: string, databases, trellis_files): Ground.Core;
     public get_bulb(name: string): Promise;
@@ -32,13 +33,6 @@ declare module Vineyard {
     interface IRole {
         id?;
         name?: string;
-    }
-    class User {
-        public id: number;
-        public name: string;
-        public session;
-        constructor(source: IUser);
-        public simple(): IUser;
     }
 }
 declare module "vineyard" {
