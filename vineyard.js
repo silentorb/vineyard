@@ -1,4 +1,10 @@
-var MetaHub = require('metahub');var Ground = require('ground');var Vineyard = (function () {
+var MetaHub = require('metahub');var Ground = require('ground');var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Vineyard = (function () {
     function Vineyard(config_file) {
         if (typeof config_file === "undefined") { config_file = undefined; }
         this.bulbs = {};
@@ -62,12 +68,7 @@ var MetaHub = require('metahub');var Ground = require('ground');var Vineyard = (
     };
     return Vineyard;
 })();
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
+
 var Vineyard;
 (function (Vineyard) {
     var Bulb = (function (_super) {
@@ -90,4 +91,5 @@ var Vineyard;
     })(MetaHub.Meta_Object);
     Vineyard.Bulb = Bulb;
 })(Vineyard || (Vineyard = {}));
+//# sourceMappingURL=vineyard.js.map
 module.exports = Vineyard

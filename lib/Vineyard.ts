@@ -73,3 +73,41 @@ class Vineyard {
     }
   }
 }
+
+module Vineyard {
+  export interface IUser {
+    id?
+    name?:string
+    roles?:IRole[]
+  }
+
+  export interface IRole {
+    id?
+    name?:string
+  }
+
+  export class Bulb extends MetaHub.Meta_Object {
+    vineyard: Vineyard
+    config
+    ground:Ground.Core
+
+    constructor(vineyard: Vineyard, config) {
+      super()
+      this.vineyard = vineyard
+      this.ground = vineyard.ground
+      this.config = config
+    }
+
+    grow() {
+
+    }
+
+    start() {
+
+    }
+
+    stop() {
+
+    }
+  }
+}
