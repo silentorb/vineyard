@@ -12,8 +12,13 @@ class Vineyard {
     if (config_file)
       this.load(config_file)
 
-    var path = require('path')
-    this.root_path = path.dirname(require['main'].filename)
+    if (typeof global.SERVER_ROOT_PATH === 'string')
+      this.root_path = global.SERVER_ROOT_PATH
+
+    else {
+      var path = require('path')
+      this.root_path = path.dirname(require['main'].filename)
+    }
     console.log('Vineyard root path: ' + this.root_path)
   }
 
@@ -88,11 +93,11 @@ module Vineyard {
   }
 
   export class Bulb extends MetaHub.Meta_Object {
-    vineyard: Vineyard
+    vineyard:Vineyard
     config
     ground:Ground.Core
 
-    constructor(vineyard: Vineyard, config) {
+    constructor(vineyard:Vineyard, config) {
       super()
       this.vineyard = vineyard
       this.ground = vineyard.ground

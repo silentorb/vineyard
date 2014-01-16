@@ -11,8 +11,12 @@ var Vineyard = (function () {
         if (config_file)
             this.load(config_file);
 
-        var path = require('path');
-        this.root_path = path.dirname(require['main'].filename);
+        if (typeof global.SERVER_ROOT_PATH === 'string')
+            this.root_path = global.SERVER_ROOT_PATH;
+        else {
+            var path = require('path');
+            this.root_path = path.dirname(require['main'].filename);
+        }
         console.log('Vineyard root path: ' + this.root_path);
     }
     Vineyard.create_ground = function (db_name, databases, trellis_files) {
