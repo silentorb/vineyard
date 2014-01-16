@@ -14,6 +14,7 @@ class Vineyard {
 
     var path = require('path')
     this.root_path = path.dirname(require['main'].filename)
+    console.log('Vineyard root path: ' + this.root_path)
   }
 
   static create_ground(db_name:string, databases, trellis_files):Ground.Core {

@@ -13,6 +13,7 @@ var Vineyard = (function () {
 
         var path = require('path');
         this.root_path = path.dirname(require['main'].filename);
+        console.log('Vineyard root path: ' + this.root_path);
     }
     Vineyard.create_ground = function (db_name, databases, trellis_files) {
         var path = require('path');
