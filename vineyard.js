@@ -4,6 +4,7 @@ var MetaHub = require('metahub');var Ground = require('ground');var __extends = 
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+
 var Vineyard = (function () {
     function Vineyard(config_file) {
         if (typeof config_file === "undefined") { config_file = undefined; }
@@ -41,9 +42,12 @@ var Vineyard = (function () {
                 var path = require('path');
                 file = path.resolve(info.path);
             } else
-                file = name;
+                file = info.parent || name;
 
             var bulb_class = require(file);
+            if (info.class)
+                bulb_class = bulb_class[info.class];
+
             if (!bulb_class)
                 throw new Error('Could not load bulb module: "' + name + '" (path=' + file + ').');
 

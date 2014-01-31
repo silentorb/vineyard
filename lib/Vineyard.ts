@@ -1,6 +1,12 @@
 /// <reference path="references.ts"/>
 /// <reference path="../defs/ground.d.ts"/>
 
+interface Bulb_Configuration {
+  path?:string
+  class?:string
+  parent?:string
+}
+
 class Vineyard {
   bulbs:any = {}
   config
@@ -41,15 +47,18 @@ class Vineyard {
   load_bulbs(bulbs) {
     var name, file, bulb_class
     for (var name in bulbs) {
-      var info = bulbs[name]
+      var info = <Bulb_Configuration> bulbs[name]
       if (info.path) {
         var path = require('path')
         file = path.resolve(info.path)
       }
       else
-        file = name
+        file = info.parent || name
 
       var bulb_class = require(file)
+      if (info.class)
+        bulb_class = bulb_class[info.class]
+
       if (!bulb_class)
         throw new Error('Could not load bulb module: "' + name + '" (path=' + file + ').')
 
