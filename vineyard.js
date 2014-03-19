@@ -10,7 +10,7 @@ var Vineyard = (function () {
         if (typeof config_file === "undefined") { config_file = undefined; }
         this.bulbs = {};
         if (config_file)
-            this.load(config_file);
+            this.load_config(config_file);
 
         if (typeof global.SERVER_ROOT_PATH === 'string')
             this.root_path = global.SERVER_ROOT_PATH;
@@ -34,30 +34,34 @@ var Vineyard = (function () {
         return when.resolve(this.bulbs[name]);
     };
 
-    Vineyard.prototype.load_bulbs = function (bulbs) {
-        var name, file, bulb_class;
+    Vineyard.prototype.load_bulb = function (name) {
+        var file, info = this.config.bulbs[name];
+        if (info.path) {
+            var path = require('path');
+            file = path.resolve(info.path);
+        } else
+            file = info.parent || name;
+
+        var bulb_class = require(file);
+        if (info.class)
+            bulb_class = bulb_class[info.class];
+
+        if (!bulb_class)
+            throw new Error('Could not load bulb module: "' + name + '" (path=' + file + ').');
+
+        var bulb = new bulb_class(this, info);
+        this.bulbs[name] = bulb;
+        bulb.grow();
+    };
+
+    Vineyard.prototype.load_all_bulbs = function () {
+        var bulbs = this.config.bulbs;
         for (var name in bulbs) {
-            var info = bulbs[name];
-            if (info.path) {
-                var path = require('path');
-                file = path.resolve(info.path);
-            } else
-                file = info.parent || name;
-
-            var bulb_class = require(file);
-            if (info.class)
-                bulb_class = bulb_class[info.class];
-
-            if (!bulb_class)
-                throw new Error('Could not load bulb module: "' + name + '" (path=' + file + ').');
-
-            var bulb = new bulb_class(this, info);
-            this.bulbs[name] = bulb;
-            bulb.grow();
+            this.load_bulb(name);
         }
     };
 
-    Vineyard.prototype.load = function (config_file) {
+    Vineyard.prototype.load_config = function (config_file) {
         var path = require('path');
         var fs = require('fs');
         var json = fs.readFileSync(config_file, 'ascii');
@@ -66,7 +70,6 @@ var Vineyard = (function () {
         var ground_config = this.config.ground;
 
         this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files);
-        this.load_bulbs(this.config.bulbs);
     };
 
     Vineyard.prototype.start = function () {

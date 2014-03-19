@@ -16,7 +16,7 @@ class Vineyard {
 
   constructor(config_file:string = undefined) {
     if (config_file)
-      this.load(config_file)
+      this.load_config(config_file)
 
     if (typeof global.SERVER_ROOT_PATH === 'string')
       this.root_path = global.SERVER_ROOT_PATH
@@ -44,31 +44,35 @@ class Vineyard {
     return when.resolve(this.bulbs[name])
   }
 
-  load_bulbs(bulbs) {
-    var name, file, bulb_class
+  load_bulb(name:string) {
+    var file, info = <Bulb_Configuration> this.config.bulbs[name]
+    if (info.path) {
+      var path = require('path')
+      file = path.resolve(info.path)
+    }
+    else
+      file = info.parent || name
+
+    var bulb_class = require(file)
+    if (info.class)
+      bulb_class = bulb_class[info.class]
+
+    if (!bulb_class)
+      throw new Error('Could not load bulb module: "' + name + '" (path=' + file + ').')
+
+    var bulb = new bulb_class(this, info)
+    this.bulbs[name] = bulb
+    bulb.grow()
+  }
+
+  load_all_bulbs() {
+    var bulbs = this.config.bulbs
     for (var name in bulbs) {
-      var info = <Bulb_Configuration> bulbs[name]
-      if (info.path) {
-        var path = require('path')
-        file = path.resolve(info.path)
-      }
-      else
-        file = info.parent || name
-
-      var bulb_class = require(file)
-      if (info.class)
-        bulb_class = bulb_class[info.class]
-
-      if (!bulb_class)
-        throw new Error('Could not load bulb module: "' + name + '" (path=' + file + ').')
-
-      var bulb = new bulb_class(this, info)
-      this.bulbs[name] = bulb
-      bulb.grow()
+       this.load_bulb(name)
     }
   }
 
-  load(config_file:string) {
+  load_config(config_file:string) {
     var path = require('path')
     var fs = require('fs')
     var json = fs.readFileSync(config_file, 'ascii')
@@ -78,7 +82,6 @@ class Vineyard {
 
     // It's important to load ground before the bulbs since the bulbs usually hook into ground.
     this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files)
-    this.load_bulbs(this.config.bulbs)
   }
 
   start() {
