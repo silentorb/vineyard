@@ -1,5 +1,4 @@
 /// <reference path="references.ts"/>
-/// <reference path="../defs/ground.d.ts"/>
 
 interface Bulb_Configuration {
   path?:string

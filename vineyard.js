@@ -89,6 +89,7 @@ var Vineyard = (function () {
             var bulb = this.bulbs[i];
             promises.push(bulb.stop());
         }
+
         return when.all(promises).then(function () {
             _this.ground.stop();
         });

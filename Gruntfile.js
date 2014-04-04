@@ -3,7 +3,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-ts')
   grunt.loadNpmTasks('grunt-contrib-concat')
   grunt.loadNpmTasks('grunt-contrib-watch')
-  grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-text-replace')
 
   grunt.initConfig({
@@ -51,16 +50,6 @@ module.exports = function (grunt) {
         ]
       }
     },
-    copy: {
-      "vineyard-def": {
-        files: [
-          { src: 'vineyard.d.ts', dest: '../../defs/'},
-          { src: 'vineyard.d.ts', dest: '../lawn/defs/'},
-          { src: 'vineyard.d.ts', dest: '../fortress/defs/'},
-          { src: 'vineyard.d.ts', dest: '../plantlab/defs/'}
-        ]
-      }
-    },
     watch: {
        vineyard: {
         files: 'lib/**/*.ts',
@@ -69,6 +58,6 @@ module.exports = function (grunt) {
     }
   })
 
-  grunt.registerTask('default', ['ts:vineyard', 'concat:vineyard', 'concat:vineyard-def', 'replace:vineyard-def', 'copy:vineyard-def']);
+  grunt.registerTask('default', ['ts:vineyard', 'concat:vineyard', 'concat:vineyard-def']);
 
 }
