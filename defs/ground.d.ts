@@ -12,6 +12,7 @@ declare module Ground {
         constructor(settings: {}, database: string);
         public add_table_to_database(table: Ground.Table, ground: Ground.Core): Promise;
         public add_non_trellis_tables_to_database(tables: Ground.Table[], ground: Ground.Core): Promise;
+        public close(): void;
         public create_table(trellis: Ground.Trellis): Promise;
         public create_trellis_tables(trellises: Ground.Trellis[]): Promise;
         public drop_all_tables(): Promise;
@@ -87,6 +88,7 @@ declare module Ground {
     }
     interface External_Query_Source extends Property_Query_Source {
         trellis: string;
+        map?: any;
     }
     interface Internal_Query_Source {
         fields?: any;
@@ -241,6 +243,7 @@ declare module Ground {
         public default_value: any;
         public parent: Property_Type;
         public db: Ground.Database;
+        public allow_null: boolean;
         constructor(name: string, info: any, types: Property_Type[]);
         public get_field_type(): any;
     }
@@ -272,14 +275,16 @@ declare module Ground {
         private parse_schema(data);
         static remove_fields(object: any, trellis: Ground.Trellis, filter: any): any;
         public sanitize_trellis_argument(trellis: any): Ground.Trellis;
+        public stop(): void;
         static to_bool(input: any): boolean;
     }
 }
 declare module Ground {
     interface IField {
-        relationship: string;
+        relationship?: string;
         name: string;
-        share: string;
+        share?: string;
+        other_table?: string;
     }
     class Table {
         public name: string;
@@ -298,7 +303,7 @@ declare module Ground {
         public create_sql_from_trellis(trellis: Ground.Trellis): string;
         private get_primary_keys(trellis);
         static format_value(value: any): any;
-        static generate_index_sql(name: string, index: any): string;
+        static generate_index_sql(index: any): string;
         public load_from_schema(source: any): void;
     }
 }
@@ -320,7 +325,7 @@ declare module Ground {
         public trellises: Ground.Trellis[];
         public trellis_dictionary: {};
         public identities: Identity[];
-        constructor(trellises: Ground.Trellis[]);
+        constructor(trellises: Ground.Trellis[], table_name?: string);
         public create_identity(trellis: Ground.Trellis): Identity;
         static create_from_property(property: Ground.Property): Link_Trellis;
         static create_reference(property: Ground.Property, name: string): Identity_Key;
@@ -346,21 +351,24 @@ declare module Ground {
         public name: string;
         public parent: Ground.Trellis;
         public type: string;
-        public is_readonly: boolean;
         public insert: string;
         public other_property: string;
         public "default": any;
         public other_trellis: Ground.Trellis;
         public other_trellis_name: string;
         public is_private: boolean;
+        public is_parent: boolean;
+        public is_readonly: boolean;
         public is_virtual: boolean;
         public is_composite_sub: boolean;
+        public is_unique: boolean;
         public composite_properties: any[];
         public access: string;
         public allow_null: boolean;
         constructor(name: string, source: Ground.IProperty_Source, trellis: Ground.Trellis);
         public initialize_composite_reference(other_trellis: Ground.Trellis): void;
         public fullname(): string;
+        public get_allow_null(): boolean;
         public get_composite(): Property[];
         public get_data(): Ground.IProperty_Source;
         public get_default(): any;
@@ -368,7 +376,7 @@ declare module Ground {
         public get_field_override(create_if_missing?: boolean): Ground.IField;
         public get_field_type(): any;
         public get_seed_name(): string;
-        public get_sql_value(value: any, type?: any): any;
+        public get_sql_value(value: any, type?: any, is_reference?: boolean): any;
         public get_type(): string;
         public get_other_id(entity: any): any;
         public get_other_property(create_if_none?: boolean): Property;
@@ -407,9 +415,12 @@ declare module Ground {
         public include_links: boolean;
         public transforms: Query_Transform[];
         public subqueries: {};
+        public map: {};
         static operators: {
             '=': any;
-            'LIKE': (result: any, filter: any, property: any, data: any) => void;
+            'LIKE': {
+                "render": (result: any, filter: any, property: any, data: any) => void;
+            };
             '!=': any;
         };
         public filters: Query_Filter[];
@@ -418,6 +429,7 @@ declare module Ground {
         public add_filter(property_name: string, value?: any, operator?: string): void;
         public add_key_filter(value: any): void;
         public add_sort(sort: Query_Sort): void;
+        public add_map(target: string, source?: any): void;
         public add_subquery(property_name: string, source?: any): Query_Builder;
         public add_transform_clause(clause: string): void;
         public create_runner(): Ground.Query_Runner;

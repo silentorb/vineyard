@@ -1,4 +1,4 @@
-var MetaHub = require('metahub');var Ground = require('ground');var __extends = this.__extends || function (d, b) {
+var MetaHub = require('metahub');var Ground = require('ground');when = require('when');var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -73,10 +73,25 @@ var Vineyard = (function () {
     };
 
     Vineyard.prototype.start = function () {
+        var promises = [];
         for (var i in this.bulbs) {
             var bulb = this.bulbs[i];
-            bulb.start();
+            promises.push(bulb.start());
         }
+
+        return when.all(promises);
+    };
+
+    Vineyard.prototype.stop = function () {
+        var _this = this;
+        var promises = [];
+        for (var i in this.bulbs) {
+            var bulb = this.bulbs[i];
+            promises.push(bulb.stop());
+        }
+        return when.all(promises).then(function () {
+            _this.ground.stop();
+        });
     };
     return Vineyard;
 })();

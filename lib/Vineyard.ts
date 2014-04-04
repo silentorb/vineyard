@@ -84,11 +84,27 @@ class Vineyard {
     this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files)
   }
 
-  start() {
+  start():Promise {
+    var promises = []
     for (var i in this.bulbs) {
       var bulb = this.bulbs[i]
-      bulb.start()
+      promises.push(bulb.start())
     }
+
+    return when.all(promises)
+  }
+
+  stop():Promise {
+    var promises = []
+    for (var i in this.bulbs) {
+      var bulb = this.bulbs[i]
+      promises.push(bulb.stop())
+    }
+
+    return when.all(promises)
+      .then(()=> {
+        this.ground.stop()
+      })
   }
 }
 
