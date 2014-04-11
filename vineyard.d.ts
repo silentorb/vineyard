@@ -1,6 +1,6 @@
-/// <reference path="../ground/defs/node.d.ts" />
-/// <reference path="../metahub/metahub.d.ts" />
-/// <reference path="../ground/ground.d.ts" />
+/// <reference path="../vineyard-ground/defs/node.d.ts" />
+/// <reference path="../vineyard-metahub/metahub.d.ts" />
+/// <reference path="../vineyard-ground/ground.d.ts" />
 interface Bulb_Configuration {
     path?: string;
     class?: string;
@@ -42,7 +42,5 @@ declare module Vineyard {
     }
 }
 declare module "vineyard" {
-  export = Vineyard
-}declare module "vineyard" {
   export = Vineyard
 }

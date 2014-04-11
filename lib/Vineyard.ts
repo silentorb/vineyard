@@ -1,5 +1,6 @@
 /// <reference path="references.ts"/>
 
+
 interface Bulb_Configuration {
   path?:string
   class?:string
@@ -50,7 +51,19 @@ class Vineyard {
       file = path.resolve(info.path)
     }
     else
-      file = info.parent || name
+    //file = info.parent || name
+    if (info.parent) {
+      file = info.parent
+    }
+    else {
+      // The "vineyard-" prefix for Vineyard bulbs can be implicit in the configuration JSON.
+      try {
+        require.resolve(name)
+        file = name
+      } catch (e) {
+        file = 'vineyard-' + name
+      }
+    }
 
     var bulb_class = require(file)
     if (info.class)
@@ -58,6 +71,9 @@ class Vineyard {
 
     if (!bulb_class)
       throw new Error('Could not load bulb module: "' + name + '" (path=' + file + ').')
+
+    if (typeof bulb_class !== 'function')
+      throw new Error('bulb is not a class: "' + name + '" (path=' + file + ').')
 
     var bulb = new bulb_class(this, info)
     this.bulbs[name] = bulb
@@ -67,7 +83,7 @@ class Vineyard {
   load_all_bulbs() {
     var bulbs = this.config.bulbs
     for (var name in bulbs) {
-       this.load_bulb(name)
+      this.load_bulb(name)
     }
   }
 
