@@ -39,14 +39,13 @@ var Vineyard = (function () {
         if (info.path) {
             var path = require('path');
             file = path.resolve(info.path);
-        } else if (info.parent) {
-            file = info.parent;
         } else {
+            file = info.parent || name;
+
             try  {
-                require.resolve(name);
-                file = name;
+                require.resolve(file);
             } catch (e) {
-                file = 'vineyard-' + name;
+                file = 'vineyard-' + file;
             }
         }
 

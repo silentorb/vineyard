@@ -50,18 +50,14 @@ class Vineyard {
       var path = require('path')
       file = path.resolve(info.path)
     }
-    else
-    //file = info.parent || name
-    if (info.parent) {
-      file = info.parent
-    }
     else {
+      file = info.parent || name
+
       // The "vineyard-" prefix for Vineyard bulbs can be implicit in the configuration JSON.
       try {
-        require.resolve(name)
-        file = name
+        require.resolve(file)
       } catch (e) {
-        file = 'vineyard-' + name
+        file = 'vineyard-' + file
       }
     }
 
