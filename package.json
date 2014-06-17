@@ -1,6 +1,6 @@
 {
   "name": "vineyard",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Vineyard web framework.",
   "main": "vineyard.js",
   "repository": {
