@@ -20,11 +20,18 @@ var Vineyard = (function () {
         }
         console.log('Vineyard root path: ' + this.root_path);
     }
-    Vineyard.create_ground = function (db_name, databases, trellis_files) {
+    Vineyard.create_ground = function (db_name, databases, trellis_files, metahub_files) {
+        if (typeof metahub_files === "undefined") { metahub_files = null; }
         var path = require('path');
         var ground = new Ground.Core(databases, db_name);
         for (var i in trellis_files) {
             ground.load_schema_from_file(trellis_files[i]);
+        }
+
+        if (metahub_files) {
+            for (var j in metahub_files) {
+                ground.load_metahub_file(metahub_files[j]);
+            }
         }
 
         return ground;
@@ -79,7 +86,7 @@ var Vineyard = (function () {
         this.config_folder = path.dirname(config_file);
         var ground_config = this.config.ground;
 
-        this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files);
+        this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files, ground_config.metahub_files);
     };
 
     Vineyard.prototype.start = function () {

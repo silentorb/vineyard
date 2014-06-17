@@ -13,7 +13,7 @@ declare class Vineyard {
     public ground: Ground.Core;
     public root_path: string;
     constructor(config_file?: string);
-    static create_ground(db_name: string, databases: any, trellis_files: any): Ground.Core;
+    static create_ground(db_name: string, databases: any, trellis_files: any, metahub_files?: any): Ground.Core;
     public get_bulb(name: string): Promise;
     public load_bulb(name: string): void;
     public load_all_bulbs(): void;

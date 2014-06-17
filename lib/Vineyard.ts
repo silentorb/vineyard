@@ -28,11 +28,17 @@ class Vineyard {
     console.log('Vineyard root path: ' + this.root_path)
   }
 
-  static create_ground(db_name:string, databases, trellis_files):Ground.Core {
+  static create_ground(db_name:string, databases, trellis_files, metahub_files = null):Ground.Core {
     var path = require('path')
     var ground = new Ground.Core(databases, db_name);
     for (var i in trellis_files) {
       ground.load_schema_from_file(trellis_files[i])
+    }
+
+    if (metahub_files) {
+      for (var j in metahub_files) {
+        ground.load_metahub_file(metahub_files[j])
+      }
     }
 
     return ground;
@@ -92,7 +98,11 @@ class Vineyard {
     var ground_config = this.config.ground
 
     // It's important to load ground before the bulbs since the bulbs usually hook into ground.
-    this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files)
+    this.ground = Vineyard.create_ground("local",
+      ground_config.databases,
+      ground_config.trellis_files,
+      ground_config.metahub_files
+    )
   }
 
   start():Promise {
