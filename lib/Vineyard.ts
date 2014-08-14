@@ -52,6 +52,9 @@ class Vineyard {
 
   load_bulb(name:string) {
     var file, info = <Bulb_Configuration> this.config.bulbs[name]
+    if (!info) {
+      throw new Error("Could not find configuration for bulb: " + name)
+    }
     if (info.path) {
       var path = require('path')
       file = path.resolve(info.path)

@@ -43,6 +43,9 @@ var Vineyard = (function () {
 
     Vineyard.prototype.load_bulb = function (name) {
         var file, info = this.config.bulbs[name];
+        if (!info) {
+            throw new Error("Could not find configuration for bulb: " + name);
+        }
         if (info.path) {
             var path = require('path');
             file = path.resolve(info.path);

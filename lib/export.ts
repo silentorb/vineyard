@@ -6,4 +6,4 @@
 /// <reference path="Vineyard.ts"/>
 /// <reference path="Bulb.ts"/>
 /// <reference path="User.ts"/>
-require('source-map-support').install();
+//require('source-map-support').install();
