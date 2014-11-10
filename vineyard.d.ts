@@ -12,12 +12,13 @@ declare class Vineyard {
     public config_folder: any;
     public ground: Ground.Core;
     public root_path: string;
-    constructor(config_file?: string);
+    constructor(config_file: string);
     static create_ground(db_name: string, databases: any, trellis_files: any, metahub_files?: any): Ground.Core;
     public get_bulb(name: string): Promise;
     public load_bulb(name: string): void;
     public load_all_bulbs(): void;
-    public load_config(config_file: string): void;
+    public load_config(config_file: string): any;
+    static deep_merge(source: any, target: any): any;
     public start(): Promise;
     public stop(): Promise;
 }

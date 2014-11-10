@@ -4,13 +4,24 @@ var MetaHub = require('vineyard-metahub');var Ground = require('vineyard-ground'
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+if (process.argv.indexOf('--source-map'))
+    require('source-map-support').install();
+
+if (process.argv.indexOf('--monitor-promises'))
+    require('when/monitor/console');
 
 var Vineyard = (function () {
     function Vineyard(config_file) {
-        if (typeof config_file === "undefined") { config_file = undefined; }
         this.bulbs = {};
-        if (config_file)
-            this.load_config(config_file);
+        if (!config_file)
+            throw new Error("Vineyard constructor is missing config file path.");
+
+        this.config = this.load_config(config_file);
+        var path = require('path');
+        this.config_folder = path.dirname(config_file);
+        var ground_config = this.config.ground;
+
+        this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files, ground_config.metahub_files);
 
         if (typeof global.SERVER_ROOT_PATH === 'string')
             this.root_path = global.SERVER_ROOT_PATH;
@@ -82,14 +93,47 @@ var Vineyard = (function () {
     };
 
     Vineyard.prototype.load_config = function (config_file) {
-        var path = require('path');
         var fs = require('fs');
         var json = fs.readFileSync(config_file, 'ascii');
-        this.config = JSON.parse(json);
-        this.config_folder = path.dirname(config_file);
-        var ground_config = this.config.ground;
+        var local = JSON.parse(json);
+        var includes = local.includes;
+        if (typeof includes == 'object') {
+            for (var i = 0; i < includes.length; ++i) {
+                var include = this.load_config(includes[i]);
 
-        this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files, ground_config.metahub_files);
+                local = Vineyard.deep_merge(local, include);
+            }
+        }
+        return local;
+    };
+
+    Vineyard.deep_merge = function (source, target) {
+        if (typeof source != 'object')
+            throw new Error('Configuration source is not an object.');
+
+        if (typeof target != 'object')
+            throw new Error('Configuration target is not an object.');
+
+        for (var key in source) {
+            var value = source[key];
+            if (typeof value == 'object') {
+                if (target[key] === undefined) {
+                    target[key] = source[key];
+                } else {
+                    if (MetaHub.is_array(source)) {
+                        for (var i = 0; i < source.length; ++i) {
+                            target.push(source[i]);
+                        }
+                    } else {
+                        Vineyard.deep_merge(value, target[key]);
+                    }
+                }
+            } else {
+                target[key] = value;
+            }
+        }
+
+        return target;
     };
 
     Vineyard.prototype.start = function () {
