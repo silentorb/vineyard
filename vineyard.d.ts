@@ -24,7 +24,7 @@ declare class Vineyard {
     public start(): Promise;
     public stop(): Promise;
     public add_json_schema(name: any, path: any): void;
-    public validate(data: any, schema_name: any): any;
+    public find_schema_errors(data: any, schema_name: any): any;
 }
 declare module Vineyard {
     interface IUser {

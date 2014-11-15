@@ -168,12 +168,15 @@ var Vineyard = (function () {
         this.json_schemas[name] = JSON.parse(fs.readFileSync(path, 'ascii'));
     };
 
-    Vineyard.prototype.validate = function (data, schema_name) {
+    Vineyard.prototype.find_schema_errors = function (data, schema_name) {
         var schema = this.json_schemas[schema_name];
         if (!schema)
             throw new Error('Could not validate data.  No schema named ' + schema_name + ' was loaded.');
 
-        return this.validator.validate(data, schema);
+        if (this.validator.validate(data, schema))
+            return null;
+
+        return this.validator.error;
     };
     return Vineyard;
 })();
