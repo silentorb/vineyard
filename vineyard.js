@@ -13,9 +13,11 @@ if (process.argv.indexOf('--monitor-promises'))
 var Vineyard = (function () {
     function Vineyard(config_file) {
         this.bulbs = {};
+        this.json_schemas = {};
         if (!config_file)
             throw new Error("Vineyard constructor is missing config file path.");
 
+        this.validator = require('tv4');
         this.config = this.load_config(config_file);
         var path = require('path');
         this.config_folder = path.dirname(config_file);
@@ -159,6 +161,19 @@ var Vineyard = (function () {
         return when.all(promises).then(function () {
             _this.ground.stop();
         });
+    };
+
+    Vineyard.prototype.add_json_schema = function (name, path) {
+        var fs = require('fs');
+        this.json_schemas[name] = JSON.parse(fs.readFileSync(path, 'ascii'));
+    };
+
+    Vineyard.prototype.validate = function (data, schema_name) {
+        var schema = this.json_schemas[schema_name];
+        if (!schema)
+            throw new Error('Could not validate data.  No schema named ' + schema_name + ' was loaded.');
+
+        return this.validator.validate(data, schema);
     };
     return Vineyard;
 })();

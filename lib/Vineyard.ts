@@ -18,11 +18,14 @@ class Vineyard {
   config_folder
   ground:Ground.Core
   root_path:string
+  private validator
+  private json_schemas = {}
 
   constructor(config_file:string) {
     if (!config_file)
       throw new Error("Vineyard constructor is missing config file path.")
 
+    this.validator = require('tv4')
     this.config = this.load_config(config_file)
     var path = require('path')
     this.config_folder = path.dirname(config_file)
@@ -61,8 +64,6 @@ class Vineyard {
     return ground;
   }
 
-  // Eventually this will be asynchronous so bulbs can declare hooks to each other while each
-  // other is still get loaded.
   get_bulb(name:string):Promise {
     return when.resolve(this.bulbs[name])
   }
@@ -181,6 +182,19 @@ class Vineyard {
       .then(()=> {
         this.ground.stop()
       })
+  }
+
+  add_json_schema(name, path) {
+    var fs = require('fs')
+    this.json_schemas[name] = JSON.parse(fs.readFileSync(path, 'ascii'))
+  }
+
+  validate(data, schema_name) {
+    var schema = this.json_schemas[schema_name]
+    if (!schema)
+      throw new Error('Could not validate data.  No schema named ' + schema_name + ' was loaded.')
+
+    return this.validator.validate(data, schema)
   }
 }
 
