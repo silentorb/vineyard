@@ -163,9 +163,13 @@ var Vineyard = (function () {
         });
     };
 
-    Vineyard.prototype.add_json_schema = function (name, path) {
+    Vineyard.prototype.load_json_schema = function (name, path) {
         var fs = require('fs');
         this.json_schemas[name] = JSON.parse(fs.readFileSync(path, 'ascii'));
+    };
+
+    Vineyard.prototype.add_json_schema = function (name, schema) {
+        this.json_schemas[name] = schema;
     };
 
     Vineyard.prototype.find_schema_errors = function (data, schema_name) {

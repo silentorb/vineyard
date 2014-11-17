@@ -184,9 +184,13 @@ class Vineyard {
       })
   }
 
-  add_json_schema(name, path) {
+  load_json_schema(name, path) {
     var fs = require('fs')
     this.json_schemas[name] = JSON.parse(fs.readFileSync(path, 'ascii'))
+  }
+
+  add_json_schema(name, schema) {
+    this.json_schemas[name] = schema
   }
 
   find_schema_errors(data, schema_name) {

@@ -23,7 +23,8 @@ declare class Vineyard {
     static deep_merge(source: any, target: any): any;
     public start(): Promise;
     public stop(): Promise;
-    public add_json_schema(name: any, path: any): void;
+    public load_json_schema(name: any, path: any): void;
+    public add_json_schema(name: any, schema: any): void;
     public find_schema_errors(data: any, schema_name: any): any;
 }
 declare module Vineyard {
