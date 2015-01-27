@@ -1,6 +1,6 @@
 {
   "name": "vineyard",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Vineyard web framework.",
   "main": "vineyard.js",
   "repository": {
@@ -15,5 +15,8 @@
     "grunt-contrib-watch": "~0.6.1",
     "grunt-text-replace": "~0.3.x",
     "grunt-contrib-concat": "~0.4.0"
+  },
+  "dependencies": {
+    "tv4": "^1.1.9"
   }
 }

@@ -1,10 +1,17 @@
-/// <reference path="references.ts"/>
+///<reference path='../../vineyard-ground/defs/node.d.ts' />
+/// <reference path="../../vineyard-metahub/metahub.d.ts"/>
+/// <reference path="../../vineyard-ground/ground.d.ts"/>
 
 if (process.argv.indexOf('--source-map'))
   require('source-map-support').install()
 
 if (process.argv.indexOf('--monitor-promises'))
   require('when/monitor/console')
+
+if (process.argv.indexOf('--profile') > -1) {
+  var agent = require('webkit-devtools-agent')
+  agent.start()
+}
 
 interface Bulb_Configuration {
   path?:string
@@ -20,6 +27,7 @@ class Vineyard {
   root_path:string
   private validator
   private json_schemas = {}
+  private module_schema_files = []
 
   constructor(config_file:string) {
     if (!config_file)
@@ -29,14 +37,6 @@ class Vineyard {
     this.config = this.load_config(config_file)
     var path = require('path')
     this.config_folder = path.dirname(config_file)
-    var ground_config = this.config.ground
-
-    // It's important to load ground before the bulbs since the bulbs usually hook into ground.
-    this.ground = Vineyard.create_ground("local",
-      ground_config.databases,
-      ground_config.trellis_files,
-      ground_config.metahub_files
-    )
 
     if (typeof global.SERVER_ROOT_PATH === 'string')
       this.root_path = global.SERVER_ROOT_PATH
@@ -48,17 +48,32 @@ class Vineyard {
     console.log('Vineyard root path: ' + this.root_path)
   }
 
+  finalize() {
+    var ground_config = this.config.ground
+
+    ground_config.trellis_files = this.module_schema_files.concat(ground_config.trellis_files)
+    delete this.module_schema_files
+
+    console.log('schema-files:', ground_config.trellis_files)
+
+    // It's important to load ground before the bulbs since the bulbs usually hook into ground.
+    this.ground = Vineyard.create_ground("local",
+      ground_config.databases,
+      ground_config.trellis_files
+    )
+
+    for (var i in this.bulbs) {
+      var bulb = this.bulbs[i]
+      bulb.ground = this.ground
+      bulb.grow()
+    }
+  }
+
   static create_ground(db_name:string, databases, trellis_files, metahub_files = null):Ground.Core {
     var path = require('path')
     var ground = new Ground.Core(databases, db_name);
     for (var i in trellis_files) {
       ground.load_schema_from_file(trellis_files[i])
-    }
-
-    if (metahub_files) {
-      for (var j in metahub_files) {
-        ground.load_metahub_file(metahub_files[j])
-      }
     }
 
     return ground;
@@ -68,11 +83,14 @@ class Vineyard {
     return when.resolve(this.bulbs[name])
   }
 
-  load_bulb(name:string) {
-    var file, info = <Bulb_Configuration> this.config.bulbs[name]
-    if (!info) {
+  load_bulb(name:string, info:Bulb_Configuration = null):Vineyard.Bulb {
+    if (!info)
+      info = <Bulb_Configuration> this.config.bulbs[name]
+
+    if (!info)
       throw new Error("Could not find configuration for bulb: " + name)
-    }
+
+    var file
     if (info.path) {
       var path = require('path')
       file = path.resolve(info.path)
@@ -100,7 +118,12 @@ class Vineyard {
 
     var bulb = new bulb_class(this, info)
     this.bulbs[name] = bulb
-    bulb.grow()
+
+    // Offload and re-add schema files added in the configuration so that they always
+    // loaded after the module schema files.
+    bulb.till_ground(this.config.ground)
+
+    return bulb
   }
 
   load_all_bulbs() {
@@ -108,6 +131,12 @@ class Vineyard {
     for (var name in bulbs) {
       this.load_bulb(name)
     }
+
+    this.finalize()
+  }
+
+  add_schema(path:string) {
+    this.module_schema_files.push(path)
   }
 
   load_config(config_file:string) {
@@ -123,6 +152,7 @@ class Vineyard {
         local = Vineyard.deep_merge(local, include)
       }
     }
+
     return local
   }
 
@@ -217,6 +247,12 @@ module Vineyard {
     name?:string
   }
 
+  export interface Ground_Configuration {
+    databases?:any[]
+    trellis_files:string[]
+    metahub_files:string[]
+  }
+
   export class Bulb extends MetaHub.Meta_Object {
     vineyard:Vineyard
     config
@@ -225,20 +261,23 @@ module Vineyard {
     constructor(vineyard:Vineyard, config) {
       super()
       this.vineyard = vineyard
-      this.ground = vineyard.ground
       this.config = config
     }
 
+    // Called before Ground is loaded to allow injecting any additional Ground configuration
+    till_ground(ground_config:Ground_Configuration) {
+    }
+
+    // Called after Ground is loaded
     grow() {
-
     }
 
+    // Starts any long-running bulb processes
     start() {
-
     }
 
+    // Stops any long-running bulb processes
     stop() {
-
     }
   }
 }

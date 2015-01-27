@@ -14,11 +14,14 @@ declare class Vineyard {
     public root_path: string;
     private validator;
     private json_schemas;
+    private module_schema_files;
     constructor(config_file: string);
+    public finalize(): void;
     static create_ground(db_name: string, databases: any, trellis_files: any, metahub_files?: any): Ground.Core;
     public get_bulb(name: string): Promise;
-    public load_bulb(name: string): void;
+    public load_bulb(name: string, info?: Bulb_Configuration): Vineyard.Bulb;
     public load_all_bulbs(): void;
+    public add_schema(path: string): void;
     public load_config(config_file: string): any;
     static deep_merge(source: any, target: any): any;
     public start(): Promise;
@@ -37,11 +40,17 @@ declare module Vineyard {
         id?: any;
         name?: string;
     }
+    interface Ground_Configuration {
+        databases?: any[];
+        trellis_files: string[];
+        metahub_files: string[];
+    }
     class Bulb extends MetaHub.Meta_Object {
         public vineyard: Vineyard;
         public config: any;
         public ground: Ground.Core;
         constructor(vineyard: Vineyard, config: any);
+        public till_ground(ground_config: Ground_Configuration): void;
         public grow(): void;
         public start(): void;
         public stop(): void;

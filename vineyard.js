@@ -10,10 +10,16 @@ if (process.argv.indexOf('--source-map'))
 if (process.argv.indexOf('--monitor-promises'))
     require('when/monitor/console');
 
+if (process.argv.indexOf('--profile') > -1) {
+    var agent = require('webkit-devtools-agent');
+    agent.start();
+}
+
 var Vineyard = (function () {
     function Vineyard(config_file) {
         this.bulbs = {};
         this.json_schemas = {};
+        this.module_schema_files = [];
         if (!config_file)
             throw new Error("Vineyard constructor is missing config file path.");
 
@@ -21,9 +27,6 @@ var Vineyard = (function () {
         this.config = this.load_config(config_file);
         var path = require('path');
         this.config_folder = path.dirname(config_file);
-        var ground_config = this.config.ground;
-
-        this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files, ground_config.metahub_files);
 
         if (typeof global.SERVER_ROOT_PATH === 'string')
             this.root_path = global.SERVER_ROOT_PATH;
@@ -33,18 +36,29 @@ var Vineyard = (function () {
         }
         console.log('Vineyard root path: ' + this.root_path);
     }
+    Vineyard.prototype.finalize = function () {
+        var ground_config = this.config.ground;
+
+        ground_config.trellis_files = this.module_schema_files.concat(ground_config.trellis_files);
+        delete this.module_schema_files;
+
+        console.log('schema-files:', ground_config.trellis_files);
+
+        this.ground = Vineyard.create_ground("local", ground_config.databases, ground_config.trellis_files);
+
+        for (var i in this.bulbs) {
+            var bulb = this.bulbs[i];
+            bulb.ground = this.ground;
+            bulb.grow();
+        }
+    };
+
     Vineyard.create_ground = function (db_name, databases, trellis_files, metahub_files) {
         if (typeof metahub_files === "undefined") { metahub_files = null; }
         var path = require('path');
         var ground = new Ground.Core(databases, db_name);
         for (var i in trellis_files) {
             ground.load_schema_from_file(trellis_files[i]);
-        }
-
-        if (metahub_files) {
-            for (var j in metahub_files) {
-                ground.load_metahub_file(metahub_files[j]);
-            }
         }
 
         return ground;
@@ -54,11 +68,15 @@ var Vineyard = (function () {
         return when.resolve(this.bulbs[name]);
     };
 
-    Vineyard.prototype.load_bulb = function (name) {
-        var file, info = this.config.bulbs[name];
-        if (!info) {
+    Vineyard.prototype.load_bulb = function (name, info) {
+        if (typeof info === "undefined") { info = null; }
+        if (!info)
+            info = this.config.bulbs[name];
+
+        if (!info)
             throw new Error("Could not find configuration for bulb: " + name);
-        }
+
+        var file;
         if (info.path) {
             var path = require('path');
             file = path.resolve(info.path);
@@ -84,7 +102,10 @@ var Vineyard = (function () {
 
         var bulb = new bulb_class(this, info);
         this.bulbs[name] = bulb;
-        bulb.grow();
+
+        bulb.till_ground(this.config.ground);
+
+        return bulb;
     };
 
     Vineyard.prototype.load_all_bulbs = function () {
@@ -92,6 +113,12 @@ var Vineyard = (function () {
         for (var name in bulbs) {
             this.load_bulb(name);
         }
+
+        this.finalize();
+    };
+
+    Vineyard.prototype.add_schema = function (path) {
+        this.module_schema_files.push(path);
     };
 
     Vineyard.prototype.load_config = function (config_file) {
@@ -106,6 +133,7 @@ var Vineyard = (function () {
                 local = Vineyard.deep_merge(local, include);
             }
         }
+
         return local;
     };
 
@@ -192,9 +220,11 @@ var Vineyard;
         function Bulb(vineyard, config) {
             _super.call(this);
             this.vineyard = vineyard;
-            this.ground = vineyard.ground;
             this.config = config;
         }
+        Bulb.prototype.till_ground = function (ground_config) {
+        };
+
         Bulb.prototype.grow = function () {
         };
 
