@@ -1,6 +1,6 @@
 # How to Install a Vineyard project #
 
-This assumes you have [Node.js](http://nodejs.org/) and [Git](http://git-scm.com/) installed.
+This requires [Node.js](http://nodejs.org/), [MySQL](http://www.mysql.com/), and [Git](http://git-scm.com/).
 
 1. Create a MySQL database for your project such as example_db.
 
@@ -11,7 +11,7 @@ This assumes you have [Node.js](http://nodejs.org/) and [Git](http://git-scm.com
         npm install
         cp config/local-sample.json config/local.json
 
-3. Edit config/local.json and change the "database" value to the name of the database you created.)
+3. Edit config/local.json and change the "database" value to the name of the database you created.
 
 4. Initialize the database with:
 
