@@ -13,7 +13,7 @@ This requires [Node.js](http://nodejs.org/), [MySQL](http://www.mysql.com/), and
 
 3. Edit config/local.json and change the "database" value to the name of the database you created.
 
-4. Initialize the database with:
+4. Initialize the database.
 
         node scripts/db
 
