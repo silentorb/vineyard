@@ -236,6 +236,47 @@ var Vineyard;
         return Bulb;
     })(MetaHub.Meta_Object);
     Vineyard.Bulb = Bulb;
+
+    var Version = (function () {
+        function Version(text) {
+            this.minor = Infinity;
+            this.revision = Infinity;
+            this.text = text;
+            var tokens = text.trim().split('.');
+            var numbers = [];
+            for (var i = 0; i < tokens.length; ++i) {
+                var token = tokens[i];
+                if (token == 'x') {
+                    numbers.push(Infinity);
+                }
+                if (token.match(/^\d+$/)) {
+                    numbers.push(parseInt(token));
+                } else {
+                    this.platform = token;
+                }
+            }
+
+            this.major = numbers[0];
+            if (numbers.length > 1) {
+                this.minor = numbers[1];
+
+                if (numbers.length > 2) {
+                    this.revision = numbers[2];
+                }
+            }
+
+            this.value = Version.get_finite_value(this.major) * 10000 + Version.get_finite_value(this.minor) * 100 + Version.get_finite_value(this.revision);
+        }
+        Version.is_valid_format = function (text) {
+            return text.match(/^\d+(\.(\d+|x))?(\.(\d+|x))?(\.\w+)?$/);
+        };
+
+        Version.get_finite_value = function (integer) {
+            return isFinite(integer) ? integer : 0;
+        };
+        return Version;
+    })();
+    Vineyard.Version = Version;
 })(Vineyard || (Vineyard = {}));
 //# sourceMappingURL=vineyard.js.map
 module.exports = Vineyard

@@ -55,6 +55,17 @@ declare module Vineyard {
         public start(): void;
         public stop(): void;
     }
+    class Version {
+        public major: number;
+        public minor: number;
+        public revision: number;
+        public platform: string;
+        public text: string;
+        public value: number;
+        constructor(text: string);
+        static is_valid_format(text: string): string[];
+        static get_finite_value(integer: number): number;
+    }
 }
 declare module "vineyard" {
   export = Vineyard
