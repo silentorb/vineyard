@@ -167,7 +167,7 @@ var Vineyard = (function () {
     };
 
     Vineyard.prototype.start = function () {
-        this.ground.harden_schema();
+        this.ground.schema.harden();
 
         var promises = [];
         for (var i in this.bulbs) {

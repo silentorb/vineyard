@@ -1,6 +1,8 @@
 ///<reference path='../../vineyard-ground/defs/node.d.ts' />
 /// <reference path="../../vineyard-metahub/metahub.d.ts"/>
-/// <reference path="../../vineyard-ground/ground.d.ts"/>
+/// <reference path="../../vineyard-ground/dist/landscape.d.ts"/>
+/// <reference path="../../vineyard-ground/dist/mining.d.ts"/>
+/// <reference path="../../vineyard-ground/dist/ground.d.ts"/>
 
 if (process.argv.indexOf('--source-map'))
 	require('source-map-support').install()
@@ -190,7 +192,7 @@ class Vineyard {
 
 	start():Promise {
 
-		this.ground.harden_schema()
+		this.ground.schema.harden()
 
 		var promises = []
 		for (var i in this.bulbs) {

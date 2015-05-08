@@ -1,6 +1,8 @@
 /// <reference path="../vineyard-ground/defs/node.d.ts" />
 /// <reference path="../vineyard-metahub/metahub.d.ts" />
-/// <reference path="../vineyard-ground/ground.d.ts" />
+/// <reference path="../vineyard-ground/dist/landscape.d.ts" />
+/// <reference path="../vineyard-ground/dist/mining.d.ts" />
+/// <reference path="../vineyard-ground/dist/ground.d.ts" />
 interface Bulb_Configuration {
     path?: string;
     class?: string;
